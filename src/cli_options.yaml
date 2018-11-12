@@ -3,6 +3,14 @@ version: "0.0.1"
 author: Stewart Malik <mali0037@gmail.com>
 about: Reads the temperature from a DS18B20 Digital Temperature Module connected via the OneWire Protocol Kernel module
 args:
+  - base-path:
+      long: base-path
+      help: The base file path to search in
+      required: true
+  - file-name:
+      long: file-name
+      help: The file name to read the data from
+      required: true
   - INPUT:
-      help: The input file to use to read temperature data from
+      help: override the previous options and read directly from this file
       required: true
