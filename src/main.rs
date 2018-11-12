@@ -11,18 +11,12 @@ fn main() {
     let matches = App::from_yaml(yaml).get_matches();
 
     // unwrap is safe here because INPUT is required
-    let basepath = matches.value_of("base-path");
-    let filepath= matches.value_of("file-path");
-    let devicepath = matches.value_of("INPUT");
-
-    let sensor = sensor::SensorData::new(basepath, filepath, devicepath);
-
-    let fullpath = format!("{}{}{}", sensor.basepath, sensor.devicepath.unwrap(), sensor.filepath);
+    let filepath = matches.value_of("INPUT").unwrap();
 
     // Load the data from the file
-    let data: String = match sensor::read_sensor_data(fullpath.as_str()) {
+    let data: String = match sensor::read_sensor_data(filepath) {
         Ok(data) => data,
-        Err(error) => return eprintln!("Failed to read sensor data from file: {}\n{:?}", fullpath.as_str(), error)
+        Err(error) => return eprintln!("Failed to read sensor data from file: {}\n{:?}", filepath, error)
     };
 
     // Now let's parse that data and attempt to extract the temperature

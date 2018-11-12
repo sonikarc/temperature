@@ -1,24 +1,9 @@
 use std::io::{Read, Error, ErrorKind};
 use std::fs::File;
 
-type Temperature = f64;
-
-const BASEPATH: &'static str = "/sys/bus/w1/devices";
-const FILEPATH: &'static str = "w1_slave";
-
 #[derive(Debug)]
 pub enum SensorError {
     CouldNotReadSensorData(ErrorKind),
-}
-
-// Think it makes more sense for the SensorData to also own a copy of the data to
-// make it distinct from the data passed in via command line
-#[derive(Debug)]
-pub struct SensorData {
-    pub basepath: String,
-    pub filepath: String,
-    pub devicepath: Option<String>,
-    pub temperature: Option<Temperature>,
 }
 
 impl From<Error> for SensorError {
@@ -27,33 +12,10 @@ impl From<Error> for SensorError {
     }
 }
 
-impl SensorData {
-
-    pub fn new(basepath: Option<&str>, filepath: Option<&str>, devicepath: Option<&str>) -> SensorData {
-        let basepath = basepath.unwrap_or(BASEPATH);
-        let filepath = filepath.unwrap_or(FILEPATH);
-
-        // Convert to owned string
-        let devicepath= devicepath.map(|path| path.to_string());
-
-        SensorData {
-            basepath: basepath.to_string(),
-            filepath: filepath.to_string(),
-            devicepath: devicepath,
-            temperature: None,
-        }
-    }
-
-    pub fn new_by_guessing_paths(basepath: Option<&str>, filepath: Option<&str>, paths: Vec<&str>) -> SensorData {
-        SensorData::new(basepath, filepath, guess_device_file_name(paths))
-    }
-
-}
-
 ///
 /// Converts temperature read from the device to a more human readable one.
 ///
-pub fn convert_temperature(temp: &str) -> Temperature {
+pub fn convert_temperature(temp: &str) -> f64 {
     let f_temp: f64 = temp.parse().unwrap_or(0.0);
 
     f_temp / 1000.0
