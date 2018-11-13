@@ -1,9 +1,12 @@
 use std::io::{Read, Error, ErrorKind};
 use std::fs::File;
 
+pub type Temperature = f64;
+
 #[derive(Debug)]
 pub enum SensorError {
     CouldNotReadSensorData(ErrorKind),
+    CouldNotSubmitToDb,
 }
 
 impl From<Error> for SensorError {
@@ -15,7 +18,7 @@ impl From<Error> for SensorError {
 ///
 /// Converts temperature read from the device to a more human readable one.
 ///
-pub fn convert_temperature(temp: &str) -> f64 {
+pub fn convert_temperature(temp: &str) -> Temperature {
     let f_temp: f64 = temp.parse().unwrap_or(0.0);
 
     f_temp / 1000.0
@@ -46,20 +49,6 @@ pub fn read_sensor_data(path: &str) -> Result<String, SensorError> {
     Ok(data)
 }
 
-///
-/// Attempts to guess at what device file to read input from.
-///
-fn guess_device_file_name(devices: Vec<&str>) -> Option<&str> {
-    let pattern = "28-";
-
-    for device in devices {
-        if device.starts_with(pattern) {
-            return Some(device);
-        }
-    }
-
-    None
-}
 
 #[cfg(test)]
 mod tests {
@@ -92,17 +81,6 @@ mod tests {
         // create empty data (there's nothing int the file or it can't be parsed
         let stub_data = "";
         assert_eq!(None, parse_sensor_data(stub_data));
-    }
-
-    #[test]
-    fn it_can_guess_the_device_file_name() {
-        // Test we don't find a match for the device
-        let devices = vec!["00-1000000", "0f-1000000", "ef-1000000"];
-        assert_eq!(None, guess_device_file_name(devices));
-
-        // Test we do find a match for the device
-        let devices = vec!["00-1000000", "0f-1000000", "28-1000000", "ef-1000000"];
-        assert_eq!(Some("28-1000000"), guess_device_file_name(devices));
     }
 
 }
