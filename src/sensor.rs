@@ -1,5 +1,5 @@
-use std::io::{Read, Error, ErrorKind};
 use std::fs::File;
+use std::io::{Error, ErrorKind, Read};
 
 pub type Temperature = f64;
 
@@ -48,7 +48,6 @@ pub fn read_sensor_data(path: &str) -> Result<String, SensorError> {
 
     Ok(data)
 }
-
 
 #[cfg(test)]
 mod tests {

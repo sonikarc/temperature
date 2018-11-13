@@ -4,5 +4,5 @@ version = "0.1.0"
 authors = ["stewart"]
 
 [dependencies]
-clap = { version = "2", features = [ "yaml" ] }
+docopt = "1"
 reqwest = "0.9.4"

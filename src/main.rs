@@ -1,24 +1,41 @@
-mod sensor;
 mod influx_client;
+mod sensor;
 
-#[macro_use]
-extern crate clap;
+extern crate docopt;
 extern crate reqwest;
 
-use clap::App;
+use docopt::Docopt;
 
+const USAGE: &'static str = "
+temperature
+
+Usage:
+	temperature (PATH)
+	temperature (-h | --help)
+	temperature (-v | --version)
+
+Options:
+	PATH		The path to the device to read sensor data from.
+	-h --help	Show this screen.
+	-v --version	Show version.
+";
 
 fn main() {
-    let yaml = load_yaml!("cli_options.yaml");
-    let matches = App::from_yaml(yaml).get_matches();
+    let args = Docopt::new(USAGE)
+        .and_then(|dopt| dopt.parse())
+        .unwrap_or_else(|e| e.exit());
 
-    // unwrap is safe here because PATH is required
-    let path = matches.value_of("PATH").unwrap();
+    let path = args.get_str("PATH");
 
     // Load the data from the file
     let data: String = match sensor::read_sensor_data(path) {
         Ok(data) => data,
-        Err(error) => return eprintln!("Failed to read sensor data from file: {}\n{:?}", path, error)
+        Err(error) => {
+            return eprintln!(
+                "Failed to read sensor data from file: {}\n{:?}",
+                path, error
+            )
+        }
     };
 
     // Now let's parse that data and attempt to extract the temperature

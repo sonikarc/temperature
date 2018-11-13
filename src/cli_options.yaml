@@ -1,8 +1,0 @@
-name: temperature
-version: "0.0.1"
-author: Stewart Malik <mali0037@gmail.com>
-about: Reads the temperature from a DS18B20 Digital Temperature Module connected via the OneWire Protocol Kernel module
-args:
-  - PATH:
-      help: Full path to read sensor data from 
-      required: true
